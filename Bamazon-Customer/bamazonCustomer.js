@@ -1,5 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var selectID;
+
 
 
 
@@ -34,18 +36,39 @@ function loadProducts() {
     });
 }
 
-function customerItem(zeItem){
+function customerItem(zeItem) {
     inquirer.prompt([{
         type: 'input',
         name: 'choice',
         message: 'Select the Item ID # you would like to purchase or "Q" to Quit'
-    }]).then(function(err, answer){
-        if(err) {
-        inquirer.prompt([{
-            type: 'input',
-            name: 'choice',
-            message: 'The item does not exist, Select the Item ID # you would like to purchase or "Q" to Quit'
-        }])
-    }
+    }]).then(function (res) {
+        exitPromt(res.choice);
+        custPurch = parseInt(res.choice);
+       var itemsChecked = checkItem(custPurch, zeItem);
+       console.log(itemsChecked);
+        
+
+
+
+
+
+
+
     })
-} 
+}
+
+function checkItem(selectID, zeItem) {
+    for (var i = 0; i < zeItem.length; i++) {
+        if (zeItem[i].item_id === selectID) {
+            return zeItem[i];
+        }
+    }
+    return null;
+};
+
+function exitPromt(sID) {
+    if (sID === "q" || sID === "Q") {
+        process.exit(0);
+    }
+};
+
