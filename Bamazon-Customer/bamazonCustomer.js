@@ -46,7 +46,11 @@ function customerItem(zeItem) {
         custPurch = parseInt(res.choice);
        var itemsChecked = checkItem(custPurch, zeItem);
        console.log(itemsChecked);
-        
+        if (itemsChecked !== null){
+            quantCheck(itemsChecked);
+
+
+        }
 
 
 
@@ -71,4 +75,32 @@ function exitPromt(sID) {
         process.exit(0);
     }
 };
+
+function quantCheck(itemsChecked){
+    inquirer.prompt([{
+        type: 'input',
+        name: 'choice',
+        message: 'How many items would you like to buy?'
+    }]).then(function (res){
+        if (res.choice <= itemsChecked.stock_quantity && res.choice > 0) {
+            reduceItem(itemsChecked,res.choice);
+        } else {
+            console.log("Not Enough!!!!")
+        }
+
+    })
+};
+
+function reduceItem(itemsChecked,quantity){
+   connection.query(
+    "UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?",
+    [quantity, itemsChecked.item_id],
+    function (err){
+        var price = itemsChecked.price * quantity;
+        console.log("\nSuccessfully purchased " + quantity + " " + itemsChecked.product_name + " at $" + price + "\n" )
+        loadProducts();
+    }
+
+   ) 
+}
 
